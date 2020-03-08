@@ -1,35 +1,48 @@
 library flutter_datetime_formfield;
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io' show Platform;
 
 /// A date time pick form field widget.
 class DateTimeFormField extends StatelessWidget {
   /// The initial date time, default value is 'DateTime.now()'.
   final DateTime initialValue;
+
   /// Save value function of form field.
   final FormFieldSetter<DateTime> onSaved;
+
   /// Validate function of form field.
   final FormFieldValidator<DateTime> validator;
+
   /// Whether validate every time, default value is false.
   final bool autovalidate;
   final bool enabled;
+
   /// The label of form field, default value is 'Date Time'.
   final String label;
+
   /// The format of displaying date time in form field, default value is 'DateFormat("EE, MMM d, yyyy h:mma")' in date and time mode,
   /// 'DateFormat("EEE, MMM d, yyyy")' in date only mode,
   /// 'DateFormat("h:mm a") in time only mode.
   final DateFormat formatter;
+
   /// Only show and edit date, default value is false.
   final bool onlyDate;
+
   /// Only show and edit time, default value is false. [onlyDate] and [onlyTime] cannot be set to true at the same time.
   final bool onlyTime;
+
   /// The first date time of picking, default value is 'DateTime(1970)'.
   final DateTime firstDate;
+
   /// The last date time of picking, default value is 'DateTime(2100)'.
   final DateTime lastDate;
+
+  /// Whether the iOS date picker should use 24-hour format or not, default is false
+  final bool use24hFormat;
 
   /// Create a DateTimeFormField.
   /// The [onlyDate] and [onlyTime] arguments can not be set to true at the same time.
@@ -45,6 +58,7 @@ class DateTimeFormField extends StatelessWidget {
     this.onlyTime: false,
     DateTime firstDate,
     DateTime lastDate,
+    this.use24hFormat: false,
   })  : assert(!onlyDate || !onlyTime),
         initialValue = initialValue ?? DateTime.now(),
         label = label ?? "Date Time",
@@ -96,7 +110,8 @@ class DateTimeFormField extends StatelessWidget {
                       height: MediaQuery.of(context).size.height / 4,
                       child: CupertinoDatePicker(
                         mode: CupertinoDatePickerMode.date,
-                        onDateTimeChanged:(DateTime dateTime) => state.didChange(dateTime),
+                        onDateTimeChanged: (DateTime dateTime) =>
+                            state.didChange(dateTime),
                         initialDateTime: state.value,
                         minimumYear: firstDate.year,
                         maximumYear: lastDate.year,
@@ -128,9 +143,10 @@ class DateTimeFormField extends StatelessWidget {
                       height: MediaQuery.of(context).size.height / 4,
                       child: CupertinoDatePicker(
                         mode: CupertinoDatePickerMode.time,
-                        onDateTimeChanged:(DateTime dateTime) => state.didChange(dateTime),
+                        onDateTimeChanged: (DateTime dateTime) =>
+                            state.didChange(dateTime),
                         initialDateTime: state.value,
-                        use24hFormat: true,
+                        use24hFormat: use24hFormat,
                         minuteInterval: 1,
                       ),
                     );
@@ -168,7 +184,8 @@ class DateTimeFormField extends StatelessWidget {
                       height: MediaQuery.of(context).size.height / 4,
                       child: CupertinoDatePicker(
                         mode: CupertinoDatePickerMode.dateAndTime,
-                        onDateTimeChanged:(DateTime dateTime) => state.didChange(dateTime),
+                        onDateTimeChanged: (DateTime dateTime) =>
+                            state.didChange(dateTime),
                         initialDateTime: state.value,
                         use24hFormat: false,
                         minuteInterval: 1,
