@@ -130,7 +130,7 @@ class DateTimeFormField extends StatelessWidget {
                         mode: CupertinoDatePickerMode.time,
                         onDateTimeChanged:(DateTime dateTime) => state.didChange(dateTime),
                         initialDateTime: state.value,
-                        use24hFormat: false,
+                        use24hFormat: true,
                         minuteInterval: 1,
                       ),
                     );
