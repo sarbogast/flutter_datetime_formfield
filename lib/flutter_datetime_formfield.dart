@@ -76,7 +76,7 @@ class DateTimeFormField extends StatelessWidget {
     this.use24hFormat: false,
     DateTime initialSelectionValue,
     String nullText,
-    bool clearable,
+    this.clearable: false,
   })  : assert(!onlyDate || !onlyTime),
         label = label ?? "Date Time",
         formatter = formatter ??
@@ -88,8 +88,7 @@ class DateTimeFormField extends StatelessWidget {
         firstDate = firstDate ?? DateTime(1970),
         lastDate = lastDate ?? DateTime(2100),
         initialSelectionValue = initialSelectionValue ?? DateTime.now(),
-        nullText = nullText ?? 'Please pick a date/time',
-        clearable = clearable ?? false;
+        nullText = nullText ?? 'Please pick a date/time';
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +217,7 @@ class DateTimeFormField extends StatelessWidget {
                         onDateTimeChanged: (DateTime dateTime) =>
                             state.didChange(dateTime),
                         initialDateTime: state.value ?? initialSelectionValue,
-                        use24hFormat: false,
+                        use24hFormat: use24hFormat,
                         minuteInterval: 1,
                       ),
                     );
