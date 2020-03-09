@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(
         title: title ?? 'Home Page',
-        initialDateTime: initialDateTime ?? DateTime.now(),
+        initialDateTime: null, //initialDateTime ?? DateTime.now(),
       ),
     );
   }
@@ -61,6 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               DateTimeFormField(
                 initialValue: widget.initialDateTime,
+                initialSelectionValue: DateTime.now().add(Duration(days: 3)),
+                nullText: 'Pick a date',
+                clearable: true,
                 label: "Date Time",
                 validator: (DateTime dateTime) {
                   if (dateTime == null) {

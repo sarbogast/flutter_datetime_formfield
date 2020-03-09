@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 /// A date time pick form field widget.
 class DateTimeFormField extends StatelessWidget {
-  /// The initial date time, default value is 'DateTime.now()'.
+  /// The initial date time, default value is null.
   final DateTime initialValue;
 
   /// Save value function of form field.
@@ -44,10 +44,25 @@ class DateTimeFormField extends StatelessWidget {
   /// Whether the iOS date picker should use 24-hour format or not, default is false
   final bool use24hFormat;
 
+  /// If initialValue is null, the date time that is used to initialize the
+  /// date picker, default value is DateTime.now().
+  /// So if current value is not null, then selection interface will start with
+  /// current value, otherwise it will look at initialSelectionValue, and if
+  /// this is null, then it will start with DateTime.now()
+  final DateTime initialSelectionValue;
+
+  /// Text that appears in the form field when the value is null, default is
+  /// 'Please pick a date/time'
+  final String nullText;
+
+  /// Whether it is possible to clear the current value and set it to null,
+  /// default is false.
+  final bool clearable;
+
   /// Create a DateTimeFormField.
   /// The [onlyDate] and [onlyTime] arguments can not be set to true at the same time.
   DateTimeFormField({
-    @required DateTime initialValue,
+    @required this.initialValue,
     @required String label,
     DateFormat formatter,
     this.onSaved,
@@ -59,8 +74,10 @@ class DateTimeFormField extends StatelessWidget {
     DateTime firstDate,
     DateTime lastDate,
     this.use24hFormat: false,
+    DateTime initialSelectionValue,
+    String nullText,
+    bool clearable,
   })  : assert(!onlyDate || !onlyTime),
-        initialValue = initialValue ?? DateTime.now(),
         label = label ?? "Date Time",
         formatter = formatter ??
             (onlyDate
@@ -69,7 +86,10 @@ class DateTimeFormField extends StatelessWidget {
                     ? DateFormat("h:mm a")
                     : DateFormat("EE, MMM d, yyyy h:mma"))),
         firstDate = firstDate ?? DateTime(1970),
-        lastDate = lastDate ?? DateTime(2100);
+        lastDate = lastDate ?? DateTime(2100),
+        initialSelectionValue = initialSelectionValue ?? DateTime.now(),
+        nullText = nullText ?? 'Please pick a date/time',
+        clearable = clearable ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +105,17 @@ class DateTimeFormField extends StatelessWidget {
             decoration: InputDecoration(
               labelText: label,
               errorText: state.errorText,
+              suffixIcon: clearable
+                  ? IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        state.didChange(null);
+                      },
+                    )
+                  : null,
             ),
-            child: Text(formatter.format(state.value)),
+            child: Text(
+                state.value != null ? formatter.format(state.value) : nullText),
           ),
           onTap: () async {
             DateTime date;
@@ -95,7 +124,7 @@ class DateTimeFormField extends StatelessWidget {
               if (Platform.isAndroid) {
                 date = await showDatePicker(
                   context: context,
-                  initialDate: state.value,
+                  initialDate: state.value ?? initialSelectionValue,
                   firstDate: firstDate,
                   lastDate: lastDate,
                 );
@@ -112,7 +141,7 @@ class DateTimeFormField extends StatelessWidget {
                         mode: CupertinoDatePickerMode.date,
                         onDateTimeChanged: (DateTime dateTime) =>
                             state.didChange(dateTime),
-                        initialDateTime: state.value,
+                        initialDateTime: state.value ?? initialSelectionValue,
                         minimumYear: firstDate.year,
                         maximumYear: lastDate.year,
                       ),
@@ -124,7 +153,8 @@ class DateTimeFormField extends StatelessWidget {
               if (Platform.isAndroid) {
                 time = await showTimePicker(
                   context: context,
-                  initialTime: TimeOfDay.fromDateTime(state.value),
+                  initialTime: TimeOfDay.fromDateTime(
+                      state.value ?? initialSelectionValue),
                 );
                 if (time != null) {
                   state.didChange(DateTime(
@@ -145,7 +175,7 @@ class DateTimeFormField extends StatelessWidget {
                         mode: CupertinoDatePickerMode.time,
                         onDateTimeChanged: (DateTime dateTime) =>
                             state.didChange(dateTime),
-                        initialDateTime: state.value,
+                        initialDateTime: state.value ?? initialSelectionValue,
                         use24hFormat: use24hFormat,
                         minuteInterval: 1,
                       ),
@@ -157,14 +187,15 @@ class DateTimeFormField extends StatelessWidget {
               if (Platform.isAndroid) {
                 date = await showDatePicker(
                   context: context,
-                  initialDate: state.value,
+                  initialDate: state.value ?? initialSelectionValue,
                   firstDate: firstDate,
                   lastDate: lastDate,
                 );
                 if (date != null) {
                   time = await showTimePicker(
                     context: context,
-                    initialTime: TimeOfDay.fromDateTime(state.value),
+                    initialTime: TimeOfDay.fromDateTime(
+                        state.value ?? initialSelectionValue),
                   );
                   if (time != null) {
                     state.didChange(DateTime(
@@ -186,7 +217,7 @@ class DateTimeFormField extends StatelessWidget {
                         mode: CupertinoDatePickerMode.dateAndTime,
                         onDateTimeChanged: (DateTime dateTime) =>
                             state.didChange(dateTime),
-                        initialDateTime: state.value,
+                        initialDateTime: state.value ?? initialSelectionValue,
                         use24hFormat: false,
                         minuteInterval: 1,
                       ),
